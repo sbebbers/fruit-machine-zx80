@@ -7,12 +7,38 @@
  */
 int main();
 
+void titleScreen();
+void startGame();
 void zx80Init();
 void cls();
 
 unsigned char prompt(unsigned char txt[32], unsigned char lineNumber);
 unsigned char printAt(unsigned short xy);
 unsigned char setText(unsigned char txt[33], unsigned char x, unsigned char y, unsigned char inv);
+
+/**
+ * Reusable variables
+ */
+unsigned char _strBuffer[33];
+unsigned char text[33];
+
+/**
+ * Game variables
+ */
+unsigned float money	= 5.00f;
+unsigned char reel		= 20;
+unsigned char entropy	= 1;
+unsigned char winLine[3]= "   ";
+/**
+ * Game constants
+ */
+unsigned float SPINCOST		= 0.25f;
+unsigned float BONUS		= 0.50f;
+unsigned float WINNING[5]	=
+{
+	1.00f, 2.00f, 4.00f, 7.50f, 10.00f
+};
+unsigned char REELS[26]		= "*$£-x $ $*0- -* ox*   x --";
 
 /**
  * Main entry point of game
@@ -25,6 +51,90 @@ unsigned char setText(unsigned char txt[33], unsigned char x, unsigned char y, u
 int main()
 {
 	zx80Init();
+	titleScreen();
+	gets(_strBuffer);
+	entropy += _strBuffer[0];
+	startGame();
+}
+
+/**
+ * Show title screen
+ *
+ * @param	na
+ * @author	sbebbington
+ * @date	26 Nov 2017
+ * @version	1.0
+ */
+void titleScreen()
+{
+	printf("       donkeysoft  mmxvii\r\n    and monument  microgames\r\n            presents\r\n          QuIcK FrUiTs");
+	printf("\r\nyou start with £5.00 \r\neach spin costs £0.25p");
+	prompt("press any key to play", 2);
+}
+
+void startGame()
+{
+	unsigned char _reel, i;
+	while(1)
+	{
+		cls();
+		for(i = 3; i > 0; i--)
+		{
+			entropy += rand()%16;
+			_reel = srand(srand(entropy)) % 26;
+			winLine[i] = REELS[_reel];
+			printf("%c ", winLine[i]);
+		}
+		prompt("",2);
+		gets(_strBuffer);
+	}
+}
+
+/**
+ * This does the basic initialisation
+ * for the game and for the ZX80 itself
+ *
+ * @param	na
+ * @author	sbebbington
+ * @date	20 Aug 2017
+ * @version	1.0
+ */
+void zx80Init()
+{
+	unsigned char y;
+	text[0] = EOF;
+	for(y = 24; y > 0; y--)
+	{
+		printf("                                \n");
+	}
+	cls();
+}
+
+/**
+ * Outputs the prompt, also accepts
+ * a string and on which line the
+ * prompt should appear
+ *
+ * @param	unsigned char, unsigned char
+ * @author	sbebbington
+ * @date	21 Aug 2017
+ * @version	1.1
+ */
+unsigned char prompt(unsigned char txt[32], unsigned char lineNumber)
+{
+	unsigned char y;
+	if(lineNumber)
+	{
+		for(y = lineNumber; y > 0; y--)
+		{
+			printf("\n");
+		}
+	}
+	if(txt[0])
+	{
+		printf("%s\n",txt);
+	}
+	printf("c:>");
 }
 
 /**
@@ -55,54 +165,6 @@ unsigned char setText(unsigned char txt[33], unsigned char x, unsigned char y, u
 	}
 	text[c] = EOF;
 	printAt(SCRLOC(x,y));
-}
-
-/**
- * This does the basic initialisation
- * for the game and for the ZX80 itself
- *
- * @param	na
- * @author	sbebbington
- * @date	20 Aug 2017
- * @version	1.0
- */
-void zx80Init()
-{
-	unsigned char y;
-	text[0] = EOF;
-	for(y = 24; y > 0; y--)
-	{
-		printf("                                \n");
-	}
-	cls();
-}
-
-
-/**
- * Outputs the prompt, also accepts
- * a string and on which line the
- * prompt should appear
- *
- * @param	unsigned char, unsigned char
- * @author	sbebbington
- * @date	21 Aug 2017
- * @version	1.1
- */
-unsigned char prompt(unsigned char txt[32], unsigned char lineNumber)
-{
-	unsigned char y;
-	if(lineNumber)
-	{
-		for(y = lineNumber; y > 0; y--)
-		{
-			printf("\n");
-		}
-	}
-	if(txt[0])
-	{
-		printf("%s\n",txt);
-	}
-	printf("c:>");
 }
 
 /**
