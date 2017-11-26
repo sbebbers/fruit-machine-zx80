@@ -19,8 +19,8 @@ unsigned char setText(unsigned char txt[33], unsigned char x, unsigned char y, u
  *
  * @param	na
  * @author	sbebbington
- * @date	21 Aug 2017
- * @version	1.2
+ * @date	26 Nov 2017
+ * @version	1.0
  */
 int main()
 {
@@ -35,8 +35,8 @@ int main()
  *
  * @param	na
  * @author	sbebbington
- * @date	21 Aug 2017
- * @version	1.0
+ * @date	26 Nov 2017
+ * @version	1.0a
  */
 unsigned char setText(unsigned char txt[33], unsigned char x, unsigned char y, unsigned char inv)
 {
