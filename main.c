@@ -45,6 +45,7 @@ unsigned char REEL2[22]		= "£-x-$-*x--*-x*-*--x--*$";
 unsigned char REEL3[22]		= "x-$-*x--*-x*---x--*$£*-";
 
 /**
+
  * Main entry point of game
  *
  * @param	na
