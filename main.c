@@ -7,16 +7,22 @@
  */
 int main();
 
-void titleScreen();
+/**
+ * Game function prototypes
+ */
 void startGame();
-void zx80Init();
+void titleScreen();
+
+/**
+ * Base function prototypes
+ */
 void cls();
 void printSpc(unsigned char spc, unsigned char txt[31]);
 void printTab(unsigned char tab, unsigned char txt[28]);
-
-unsigned char prompt(unsigned char txt[32], unsigned char lineNumber);
-unsigned char printAt(unsigned short xy);
-unsigned char setText(unsigned char txt[33], unsigned char x, unsigned char y, unsigned char inv);
+void printAt(unsigned short xy);
+void prompt(unsigned char txt[32], unsigned char lineNumber);
+void setText(unsigned char txt[33], unsigned char x, unsigned char y, unsigned char inv);
+void zx80Init();
 
 /**
  * Reusable variables
@@ -153,7 +159,7 @@ void zx80Init()
  * @date	21 Aug 2017
  * @version	1.1
  */
-unsigned char prompt(unsigned char txt[32], unsigned char lineNumber)
+void prompt(unsigned char txt[32], unsigned char lineNumber)
 {
 	unsigned char y;
 	if(lineNumber)
@@ -181,7 +187,7 @@ unsigned char prompt(unsigned char txt[32], unsigned char lineNumber)
  * @date	26 Nov 2017
  * @version	1.0a
  */
-unsigned char setText(unsigned char txt[33], unsigned char x, unsigned char y, unsigned char inv)
+void setText(unsigned char txt[33], unsigned char x, unsigned char y, unsigned char inv)
 {
 	unsigned char c = 0;
 	while(txt[c] != EOF)
