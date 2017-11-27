@@ -21,34 +21,37 @@ void printSpc(unsigned char spc, unsigned char txt[31]);
 void printTab(unsigned char tab, unsigned char txt[28]);
 void printAt(unsigned short xy);
 void prompt(unsigned char txt[32], unsigned char lineNumber);
+void randomise();
 void setText(unsigned char txt[33], unsigned char x, unsigned char y, unsigned char inv);
 void zx80Init();
 
 /**
- * Reusable variables
+ * Reusable/API variables
  */
 unsigned char _strBuffer[33];
 unsigned char text[33];
+unsigned char random;
+unsigned char a, i, x, y;
 
 /**
  * Game variables
  */
-unsigned float money	= 5.00f;
-unsigned char winLine[3]= "   ";
-unsigned int entropy	= 0;
+unsigned short pounds		= 500;
+unsigned char winLine[]		= "   ";
+
 /**
  * Game constants
  */
 unsigned char REEL			= 21;
-unsigned float SPINCOST		= 0.25f;
-unsigned float BONUS		= 0.50f;
-unsigned float WINNING[5]	=
+unsigned short SPINCOST		= 25;
+unsigned short BONUS		= 50;
+unsigned short WINNING[5]	=
 {
-	1.00f, 2.00f, 4.00f, 7.50f, 10.00f
+	100, 200, 400, 750, 1000
 };
-unsigned char REEL1[22]		= "*$£-x-$-*x--*-x*---x--*";
-unsigned char REEL2[22]		= "£-x-$-*x--*-x*-*--x--*$";
-unsigned char REEL3[22]		= "x-$-*x--*-x*---x--*$£*-";
+unsigned char REEL1[22]		= "*$\xa3-x-$-*x--*-x*---x--*";
+unsigned char REEL2[22]		= "\xa3-x-$-*x--*-x*-*--x--*$";
+unsigned char REEL3[22]		= "x-$-*x--*-x*---x--*$\xa3*-";
 
 /**
 
@@ -64,8 +67,10 @@ int main()
 	zx80Init();
 	titleScreen();
 	gets(_strBuffer);
-	entropy += _strBuffer[0];
+	randomise();
 	startGame();
+	pounds = 500;
+	return 0;
 }
 
 /**
@@ -78,19 +83,14 @@ int main()
  */
 void titleScreen()
 {
-	unsigned char i;
-	printf("       donkeysoft  mmxvii\n\n    and monument  microgames\n\n            presents\n\n          QuIcK FrUiTs");
-	printf("\n\nyou start with");
-	printSpc(5,"£5.00");
-	printf("\neach spin costs");
-	printTab(1,"£0.25p");
-	printf("\nWIN TABLE:\n");
-	printSpc(7,"");
-	for(i = 3; i > 0; i--)
-	{
-		printf("£");
-	}
-	printSpc(1,"= £10.00\n");
+	printSpc(7, "donkeysoft  mmxvii\n\n");
+	printSpc(4, "and monument  microgames\n\n");
+	printSpc(12, "presents\n\n");
+	printSpc(10, "QuIcK FrUiTs\n\nyou start with");
+	printTab(1,"\xa3");
+	printf("5.00\neach spin costs");
+	printSpc(3,"\xa3" "0.25\nWIN TABLE:\n");
+	printTab(2,"\xa3 \xa3 \xa3 = \xa3" "10.00\n");
 	printTab(2, "$ $ $ = £7.50\n");
 	printTab(2, "x x x = £4.00\n");
 	printTab(2, "* * * = £2.00\n");
@@ -99,16 +99,20 @@ void titleScreen()
 	prompt("press any key to play", 2);
 }
 
+/**
+ *
+ */
 void startGame()
 {
-	unsigned char _reel, i;
-	while(1)
+	unsigned char _reel;
+	while(pounds)
 	{
+		unsigned char pence = 0;
 		cls();
 		for(i = 3; i > 0; i--)
 		{
-			entropy += srand(entropy) % REEL;
-			_reel = srand(entropy) % REEL;
+			randomise();
+			_reel = srand(random) % REEL;
 			if(i == 3)
 			{
 				winLine[i] = REEL1[_reel];
@@ -123,9 +127,15 @@ void startGame()
 			}
 			printf("%c ", winLine[i]);
 		}
-		prompt("",2);
+		pence = pounds % 100;
+		printf("\nMONEY REMAINING \xa3%d.%d", pounds / 100, pence);
+		if(!pence)
+		{
+			printf("0");
+		}
+		pounds -= 25;
+		prompt("", 2);
 		gets(_strBuffer);
-		entropy -= _strBuffer[0];
 	}
 }
 
@@ -206,15 +216,21 @@ void setText(unsigned char txt[33], unsigned char x, unsigned char y, unsigned c
 	printAt(SCRLOC(x,y));
 }
 
+/**
+ *
+ */
 void printSpc(unsigned char spc, unsigned char txt[31])
 {
-	for(spc; spc > 0; spc--)
+	for(; spc > 0; spc--)
 	{
 		printf(" ");
 	}
 	printf("%s", txt);
 }
 
+/**
+ *
+ */
 void printTab(unsigned char tab, unsigned char txt[28])
 {
 	tab = tab * 4;
@@ -233,26 +249,26 @@ void cls()
 {
 	__asm
 	exx
-	ld hl,($400c)
-	ld bc,$0300
-	ld d,$21
+	ld hl, ($400c)
+	ld bc, $0300
+	ld d, $21
 	inc l
 	CLS:
 		dec d
-		jr z,NEWLINE
-		ld (hl),$00
+		jr z, NEWLINE
+		ld (hl), $00
 	DECC:
 		inc hl
 		dec c
-		jr z,DECB
+		jr z, DECB
 		jr CLS
 	DECB:
 		dec b
-		jr z,EXIT
+		jr z, EXIT
 		jr CLS
 	NEWLINE:
-		ld (hl),$76
-		ld d,$21
+		ld (hl), $76
+		ld d, $21
 		jr DECC
 	EXIT:
 	call $0747
@@ -266,7 +282,7 @@ void cls()
  * to work out which character or string
  * to write to the DFILE and at what position
  *
- * @param	unsigned char, unsigned char
+ * @param	unsigned short
  * @author	sbebbington
  * @date	22 Aug 2017
  * @version	1.2b
@@ -274,20 +290,37 @@ void cls()
 unsigned char printAt(unsigned short xy) __z88dk_fastcall
 {
 	__asm
-	ld b,h
-	ld c,l
-	ld hl,($400c)
+	ld b, h
+	ld c, l
+	ld hl, ($400c)
 	inc l
-	add hl,bc
-	ld bc,_text
+	add hl, bc
+	ld bc, _text
 	CHAROUT:
-		ld a,(bc)
+		ld a, (bc)
 		cp $ff
-		jr z,RETURN
-		ld (hl),a
+		jr z, RETURN
+		ld (hl), a
 		inc bc
 		inc hl
 		jr CHAROUT
 	RETURN:
+	__endasm;
+}
+
+/**
+ * Hopefully this will be a
+ * better randomiser
+ *
+ * @author	sbebbington
+ * @date	27 Nov 2017
+ * @version	1.0
+ */
+void randomise()
+{
+	__asm
+	ld hl, ($401e)
+	ld a, l
+	ld (_random), a
 	__endasm;
 }
