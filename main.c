@@ -7,54 +7,120 @@
  */
 int main();
 
+void titleScreen();
+void startGame();
 void zx80Init();
 void cls();
+void printSpc(unsigned char spc, unsigned char txt[31]);
+void printTab(unsigned char tab, unsigned char txt[28]);
 
 unsigned char prompt(unsigned char txt[32], unsigned char lineNumber);
 unsigned char printAt(unsigned short xy);
 unsigned char setText(unsigned char txt[33], unsigned char x, unsigned char y, unsigned char inv);
 
 /**
+ * Reusable variables
+ */
+unsigned char _strBuffer[33];
+unsigned char text[33];
+
+/**
+ * Game variables
+ */
+unsigned float money	= 5.00f;
+unsigned char winLine[3]= "   ";
+unsigned int entropy	= 0;
+/**
+ * Game constants
+ */
+unsigned char REEL			= 21;
+unsigned float SPINCOST		= 0.25f;
+unsigned float BONUS		= 0.50f;
+unsigned float WINNING[5]	=
+{
+	1.00f, 2.00f, 4.00f, 7.50f, 10.00f
+};
+unsigned char REEL1[22]		= "*$£-x-$-*x--*-x*---x--*";
+unsigned char REEL2[22]		= "£-x-$-*x--*-x*-*--x--*$";
+unsigned char REEL3[22]		= "x-$-*x--*-x*---x--*$£*-";
+
+/**
+
  * Main entry point of game
  *
  * @param	na
  * @author	sbebbington
- * @date	21 Aug 2017
- * @version	1.2
+ * @date	26 Nov 2017
+ * @version	1.0
  */
 int main()
 {
 	zx80Init();
+	titleScreen();
+	gets(_strBuffer);
+	entropy += _strBuffer[0];
+	startGame();
 }
 
 /**
- * This sets the fast text output
- * by passing the already defined
- * ZX80 char array to the global
- * used in the printAt() function
+ * Show title screen
  *
  * @param	na
  * @author	sbebbington
- * @date	21 Aug 2017
+ * @date	26 Nov 2017
  * @version	1.0
  */
-unsigned char setText(unsigned char txt[33], unsigned char x, unsigned char y, unsigned char inv)
+void titleScreen()
 {
-	unsigned char c = 0;
-	while(txt[c] != EOF)
+	unsigned char i;
+	printf("       donkeysoft  mmxvii\n\n    and monument  microgames\n\n            presents\n\n          QuIcK FrUiTs");
+	printf("\n\nyou start with");
+	printSpc(5,"£5.00");
+	printf("\neach spin costs");
+	printTab(1,"£0.25p");
+	printf("\nWIN TABLE:\n");
+	printSpc(7,"");
+	for(i = 3; i > 0; i--)
 	{
-		if(inv)
-		{
-			text[c] = INVERSE(txt[c]);
-		}
-		else
-		{
-			text[c] = txt[c];
-		}
-		c++;
+		printf("£");
 	}
-	text[c] = EOF;
-	printAt(SCRLOC(x,y));
+	printSpc(1,"= £10.00\n");
+	printTab(2, "$ $ $ = £7.50\n");
+	printTab(2, "x x x = £4.00\n");
+	printTab(2, "* * * = £2.00\n");
+	printTab(2, "? ? - = £1.00\n");
+	printTab(2, "- - - = £ZERO\n");
+	prompt("press any key to play", 2);
+}
+
+void startGame()
+{
+	unsigned char _reel, i;
+	while(1)
+	{
+		cls();
+		for(i = 3; i > 0; i--)
+		{
+			entropy += srand(entropy) % REEL;
+			_reel = srand(entropy) % REEL;
+			if(i == 3)
+			{
+				winLine[i] = REEL1[_reel];
+			}
+			else if(i == 2)
+			{
+				winLine[i] = REEL2[_reel];
+			}
+			else
+			{
+				winLine[i] = REEL3[_reel];
+			}
+			printf("%c ", winLine[i]);
+		}
+		prompt("",2);
+		gets(_strBuffer);
+		entropy -= _strBuffer[0];
+	}
 }
 
 /**
@@ -76,7 +142,6 @@ void zx80Init()
 	}
 	cls();
 }
-
 
 /**
  * Outputs the prompt, also accepts
@@ -103,6 +168,51 @@ unsigned char prompt(unsigned char txt[32], unsigned char lineNumber)
 		printf("%s\n",txt);
 	}
 	printf("c:>");
+}
+
+/**
+ * This sets the fast text output
+ * by passing the already defined
+ * ZX80 char array to the global
+ * used in the printAt() function
+ *
+ * @param	na
+ * @author	sbebbington
+ * @date	26 Nov 2017
+ * @version	1.0a
+ */
+unsigned char setText(unsigned char txt[33], unsigned char x, unsigned char y, unsigned char inv)
+{
+	unsigned char c = 0;
+	while(txt[c] != EOF)
+	{
+		if(inv)
+		{
+			text[c] = INVERSE(txt[c]);
+		}
+		else
+		{
+			text[c] = txt[c];
+		}
+		c++;
+	}
+	text[c] = EOF;
+	printAt(SCRLOC(x,y));
+}
+
+void printSpc(unsigned char spc, unsigned char txt[31])
+{
+	for(spc; spc > 0; spc--)
+	{
+		printf(" ");
+	}
+	printf("%s", txt);
+}
+
+void printTab(unsigned char tab, unsigned char txt[28])
+{
+	tab = tab * 4;
+	printSpc(tab, txt);
 }
 
 /**
