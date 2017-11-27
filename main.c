@@ -11,6 +11,8 @@ void titleScreen();
 void startGame();
 void zx80Init();
 void cls();
+void printSpc(unsigned char spc, unsigned char txt[31]);
+void printTab(unsigned char tab, unsigned char txt[28]);
 
 unsigned char prompt(unsigned char txt[32], unsigned char lineNumber);
 unsigned char printAt(unsigned short xy);
@@ -26,19 +28,21 @@ unsigned char text[33];
  * Game variables
  */
 unsigned float money	= 5.00f;
-unsigned char reel		= 20;
-unsigned char entropy	= 1;
 unsigned char winLine[3]= "   ";
+unsigned int entropy	= 0;
 /**
  * Game constants
  */
+unsigned char REEL			= 21;
 unsigned float SPINCOST		= 0.25f;
 unsigned float BONUS		= 0.50f;
 unsigned float WINNING[5]	=
 {
 	1.00f, 2.00f, 4.00f, 7.50f, 10.00f
 };
-unsigned char REELS[26]		= "*$£-x $ $*0- -* ox*   x --";
+unsigned char REEL1[22]		= "*$£-x-$-*x--*-x*---x--*";
+unsigned char REEL2[22]		= "£-x-$-*x--*-x*-*--x--*$";
+unsigned char REEL3[22]		= "x-$-*x--*-x*---x--*$£*-";
 
 /**
  * Main entry point of game
@@ -67,8 +71,24 @@ int main()
  */
 void titleScreen()
 {
-	printf("       donkeysoft  mmxvii\r\n    and monument  microgames\r\n            presents\r\n          QuIcK FrUiTs");
-	printf("\r\nyou start with £5.00 \r\neach spin costs £0.25p");
+	unsigned char i;
+	printf("       donkeysoft  mmxvii\n\n    and monument  microgames\n\n            presents\n\n          QuIcK FrUiTs");
+	printf("\n\nyou start with");
+	printSpc(5,"£5.00");
+	printf("\neach spin costs");
+	printTab(1,"£0.25p");
+	printf("\nWIN TABLE:\n");
+	printSpc(7,"");
+	for(i = 3; i > 0; i--)
+	{
+		printf("£");
+	}
+	printSpc(1,"= £10.00\n");
+	printTab(2, "$ $ $ = £7.50\n");
+	printTab(2, "x x x = £4.00\n");
+	printTab(2, "* * * = £2.00\n");
+	printTab(2, "? ? - = £1.00\n");
+	printTab(2, "- - - = £ZERO\n");
 	prompt("press any key to play", 2);
 }
 
@@ -80,13 +100,25 @@ void startGame()
 		cls();
 		for(i = 3; i > 0; i--)
 		{
-			entropy += rand()%16;
-			_reel = srand(srand(entropy)) % 26;
-			winLine[i] = REELS[_reel];
+			entropy += srand(entropy) % REEL;
+			_reel = srand(entropy) % REEL;
+			if(i == 3)
+			{
+				winLine[i] = REEL1[_reel];
+			}
+			else if(i == 2)
+			{
+				winLine[i] = REEL2[_reel];
+			}
+			else
+			{
+				winLine[i] = REEL3[_reel];
+			}
 			printf("%c ", winLine[i]);
 		}
 		prompt("",2);
 		gets(_strBuffer);
+		entropy -= _strBuffer[0];
 	}
 }
 
@@ -165,6 +197,21 @@ unsigned char setText(unsigned char txt[33], unsigned char x, unsigned char y, u
 	}
 	text[c] = EOF;
 	printAt(SCRLOC(x,y));
+}
+
+void printSpc(unsigned char spc, unsigned char txt[31])
+{
+	for(spc; spc > 0; spc--)
+	{
+		printf(" ");
+	}
+	printf("%s", txt);
+}
+
+void printTab(unsigned char tab, unsigned char txt[28])
+{
+	tab = tab * 4;
+	printSpc(tab, txt);
 }
 
 /**
