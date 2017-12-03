@@ -10,8 +10,11 @@ int main();
 /**
  * Game function prototypes
  */
+unsigned short checkReels(unsigned char reel1, unsigned char reel2, unsigned char reel3);
+unsigned char setReel(unsigned char reel);
 void startGame();
 void titleScreen();
+void playAgain();
 
 /**
  * Base function prototypes
@@ -19,42 +22,41 @@ void titleScreen();
 void cls();
 void printSpc(unsigned char spc, unsigned char txt[31]);
 void printTab(unsigned char tab, unsigned char txt[28]);
-void printAt(unsigned short xy);
 void prompt(unsigned char txt[32], unsigned char lineNumber);
 void randomise();
-void setText(unsigned char txt[33], unsigned char x, unsigned char y, unsigned char inv);
 void zx80Init();
 
 /**
  * Reusable/API variables
  */
 unsigned char _strBuffer[33];
-unsigned char text[33];
 unsigned char random;
-unsigned char a, i, x, y;
+unsigned char i;
 
 /**
  * Game variables
  */
 unsigned short pounds		= 500;
-unsigned char winLine[]		= "   ";
+unsigned char winLine[]		=
+{
+	45, 45, 45
+};
 
 /**
  * Game constants
  */
-unsigned char REEL			= 21;
+unsigned char REEL			= 16;
 unsigned short SPINCOST		= 25;
 unsigned short BONUS		= 50;
 unsigned short WINNING[5]	=
 {
 	100, 200, 400, 750, 1000
 };
-unsigned char REEL1[22]		= "*$\xa3-x-$-*x--*-x*---x--*";
-unsigned char REEL2[22]		= "\xa3-x-$-*x--*-x*-*--x--*$";
-unsigned char REEL3[22]		= "x-$-*x--*-x*---x--*$\xa3*-";
+unsigned char REEL1[]		= "*$\xa3x*$*x*-x*x--*";
+unsigned char REEL2[]		= "\xa3x*$*x-*-x*-*x*$";
+unsigned char REEL3[]		= "x*$*x--*-x*x*$\xa3*";
 
 /**
-
  * Main entry point of game
  *
  * @param	na
@@ -70,7 +72,21 @@ int main()
 	randomise();
 	startGame();
 	pounds = 500;
+	playAgain();
 	return 0;
+}
+
+/**
+ *
+ */
+void playAgain()
+{
+	prompt("Y to play again", 2);
+	gets(_strBuffer);
+	if(_strBuffer[0] == 121)
+	{
+		main();
+	}
 }
 
 /**
@@ -95,6 +111,7 @@ void titleScreen()
 	printTab(2, "x x x = £4.00\n");
 	printTab(2, "* * * = £2.00\n");
 	printTab(2, "? ? - = £1.00\n");
+	printTab(2, "? - ? = £?.??\n");
 	printTab(2, "- - - = £ZERO\n");
 	prompt("press any key to play", 2);
 }
@@ -104,39 +121,103 @@ void titleScreen()
  */
 void startGame()
 {
-	unsigned char _reel;
+	unsigned char _reel, pence = 0;
 	while(pounds)
 	{
-		unsigned char pence = 0;
 		cls();
-		for(i = 3; i > 0; i--)
-		{
-			randomise();
-			_reel = srand(random) % REEL;
-			if(i == 3)
-			{
-				winLine[i] = REEL1[_reel];
-			}
-			else if(i == 2)
-			{
-				winLine[i] = REEL2[_reel];
-			}
-			else
-			{
-				winLine[i] = REEL3[_reel];
-			}
-			printf("%c ", winLine[i]);
-		}
+		pounds -= 25;
+		winLine[0] = setReel(0);
+		winLine[1] = setReel(1);
+		winLine[2] = setReel(2);
+		printf("%c %c %c", winLine[0], winLine[1], winLine[2]);
+		pounds += checkReels(winLine[0], winLine[1], winLine[2]);
 		pence = pounds % 100;
 		printf("\nMONEY REMAINING \xa3%d.%d", pounds / 100, pence);
 		if(!pence)
 		{
 			printf("0");
 		}
-		pounds -= 25;
 		prompt("", 2);
+		
 		gets(_strBuffer);
 	}
+}
+
+/**
+ *
+ */
+unsigned char setReel(unsigned char reel)
+{
+	unsigned char reelPos = 0;
+	randomise();
+	if(!reel)
+	{
+		reelPos = REEL1[srand(random) % REEL];
+	}
+	else if(reel == 1)
+	{
+		reelPos = REEL2[srand(random) % REEL];
+	}
+	else
+	{
+		reelPos = REEL3[srand(random) % REEL];
+	}
+	return reelPos;
+}
+
+/**
+ *
+ */
+unsigned short checkReels(unsigned char reel1, unsigned char reel2, unsigned char reel3)
+{
+	unsigned short winnings = 0;
+	unsigned char pennies = 0;
+	if(reel1 != 45){
+		if(reel1 == reel2 && reel1 == reel3)
+		{
+			if(reel1 == 0xa3)
+			{
+				winnings = 1000;
+			}
+			if(reel1 == 36)
+			{
+				winnings = 750;
+			}
+			if(reel1 == 120)
+			{
+				winnings = 400;
+			}
+			if(reel1 == 42)
+			{
+				winnings = 200;
+			}
+		}
+		if(reel1 == reel2 && reel2 != reel3)
+		{
+			winnings = 100;
+		}
+		if(reel1 != reel2 && reel1 == reel3)
+		{
+			randomise();
+			winnings += 25;
+			winnings *= srand(random) % 7;
+			if(!winnings)
+			{
+				winnings += 75;
+			}
+		}
+		if(winnings)
+		{
+			pennies = winnings % 100;
+			printf("\nyou win \xa3%d.%d", winnings / 100, pennies);
+			if(!pennies)
+			{
+				printf("0");
+			}
+			printf("\n");
+		}
+	}
+	return winnings;
 }
 
 /**
@@ -151,7 +232,6 @@ void startGame()
 void zx80Init()
 {
 	unsigned char y;
-	text[0] = EOF;
 	for(y = 24; y > 0; y--)
 	{
 		printf("                                \n");
@@ -171,10 +251,9 @@ void zx80Init()
  */
 void prompt(unsigned char txt[32], unsigned char lineNumber)
 {
-	unsigned char y;
 	if(lineNumber)
 	{
-		for(y = lineNumber; y > 0; y--)
+		for(; lineNumber > 0; lineNumber--)
 		{
 			printf("\n");
 		}
@@ -184,36 +263,6 @@ void prompt(unsigned char txt[32], unsigned char lineNumber)
 		printf("%s\n",txt);
 	}
 	printf("c:>");
-}
-
-/**
- * This sets the fast text output
- * by passing the already defined
- * ZX80 char array to the global
- * used in the printAt() function
- *
- * @param	na
- * @author	sbebbington
- * @date	26 Nov 2017
- * @version	1.0a
- */
-void setText(unsigned char txt[33], unsigned char x, unsigned char y, unsigned char inv)
-{
-	unsigned char c = 0;
-	while(txt[c] != EOF)
-	{
-		if(inv)
-		{
-			text[c] = INVERSE(txt[c]);
-		}
-		else
-		{
-			text[c] = txt[c];
-		}
-		c++;
-	}
-	text[c] = EOF;
-	printAt(SCRLOC(x,y));
 }
 
 /**
@@ -273,38 +322,6 @@ void cls()
 	EXIT:
 	call $0747
 	exx
-	__endasm;
-}
-
-/**
- * At last, the fast printAt function works
- * does a look-up on the text global above
- * to work out which character or string
- * to write to the DFILE and at what position
- *
- * @param	unsigned short
- * @author	sbebbington
- * @date	22 Aug 2017
- * @version	1.2b
- */
-unsigned char printAt(unsigned short xy) __z88dk_fastcall
-{
-	__asm
-	ld b, h
-	ld c, l
-	ld hl, ($400c)
-	inc l
-	add hl, bc
-	ld bc, _text
-	CHAROUT:
-		ld a, (bc)
-		cp $ff
-		jr z, RETURN
-		ld (hl), a
-		inc bc
-		inc hl
-		jr CHAROUT
-	RETURN:
 	__endasm;
 }
 
