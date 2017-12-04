@@ -69,7 +69,9 @@ int main()
 	pounds = 500;
 	playAgain();
 	cls();
-	printf("thanks for playing");
+	prompt("THANKS FOR PLAYING", 1);
+	gets(_strBuffer);
+	zx80Init();
 	return 0;
 }
 
@@ -83,7 +85,8 @@ int main()
  */
 void playAgain()
 {
-	prompt("unfortunately your money is\nspent. the management do not\ngive credit. we welcome back\npaying customers who enter Y\nand press return, otherwise\nplease move along.", 2);
+	printf("unfortunately your money is\nspent. the management do not\ngive credit. we welcome back\npaying customers who enter Y\nand press RETURN, otherwise\nplease move along.");
+	prompt("", 2);
 	gets(_strBuffer);
 	if(_strBuffer[0] == 121)
 	{
@@ -108,14 +111,14 @@ void titleScreen()
 	printTab(1,"\xa3");
 	printf("5.00\neach spin costs");
 	printSpc(3,"\xa3" "0.25\nWIN TABLE:\n");
-	printTab(2,"\xa3 \xa3 \xa3 = \xa3" "10.00\n");
-	printTab(2, "$ $ $ = \xa3" "7.50\n");
-	printTab(2, "x x x = \xa3" "4.00\n");
-	printTab(2, "* * * = \xa3" "2.00\n");
-	printTab(2, "? ? - = \xa3" "1.00\n");
-	printTab(2, "? - ? = \xa3" "?.??\n");
-	printTab(2, "- - - = \xa3" "ZERO\n");
-	prompt("press any key to play", 2);
+	printTab(2,"\xa3 \xa3 \xa3 pays out \xa3" "10.00\n");
+	printTab(2, "$ $ $ pays out  \xa3" "7.50\n");
+	printTab(2, "x x x pays out  \xa3" "4.00\n");
+	printTab(2, "* * * pays out  \xa3" "2.00\n");
+	printTab(2, "? ? - pays out  \xa3" "1.00\n");
+	printTab(2, "? - ? pays out  \xa3" "?.??\n");
+	printTab(2, "- - - pays out  \xa3" "ZERO\n");
+	prompt("press the ANY KEY to play", 2);
 }
 
 /**
@@ -129,9 +132,11 @@ void titleScreen()
 void startGame()
 {
 	unsigned char _reel, pence = 0;
+	unsigned short favourComputer;
 	while(pounds)
 	{
 		cls();
+		favourComputer = 0;
 		pounds -= 25;
 		winLine[0] = setReel(0);
 		winLine[1] = setReel(1);
@@ -140,7 +145,17 @@ void startGame()
 		printf("#%c#%c#%c#\n", winLine[0], winLine[1], winLine[2]);
 		printf("####\"\"#\n");
 		printf("#######\n");
-		pounds += checkReels(winLine[0], winLine[1], winLine[2]);
+		favourComputer = checkReels(winLine[0], winLine[1], winLine[2]);
+		if(favourComputer && !random % 6)
+		{
+			while(favourComputer)
+			{
+				winLine[1] = setReel(1);
+				winLine[2] = setReel(2);
+				favourComputer = checkReels(winLine[0], winLine[1], winLine[2]);
+			}
+		}
+		pounds += favourComputer;
 		pence = pounds % 100;
 		printf("\nMONEY REMAINING \xa3%d.%d", pounds / 100, pence);
 		if(!pence)
@@ -254,10 +269,9 @@ unsigned short checkReels(unsigned char reel1, unsigned char reel2, unsigned cha
  */
 void zx80Init()
 {
-	unsigned char y;
-	for(y = 24; y > 0; y--)
+	for(i = 24; i > 0; i--)
 	{
-		printf("                                \n");
+		printf("\n");
 	}
 	cls();
 }
