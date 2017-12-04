@@ -47,14 +47,10 @@ unsigned char winLine[]		=
  */
 unsigned char REEL			= 16;
 unsigned short SPINCOST		= 25;
-unsigned short BONUS		= 50;
-unsigned short WINNING[5]	=
-{
-	100, 200, 400, 750, 1000
-};
-unsigned char REEL1[]		= "*$\xa3x*$*x*-x*x--*";
-unsigned char REEL2[]		= "\xa3x*$*x-*-x*-*x*$";
-unsigned char REEL3[]		= "x*$*x--*-x*x*$\xa3*";
+
+unsigned char REEL1[]		= "*$\xa3x*$*x*-x*x-x*";
+unsigned char REEL2[]		= "$\xa3x*$*x*-x*x-x**";
+unsigned char REEL3[]		= "\xa3x*$*x*-x*x-x**$";
 
 /**
  * Main entry point of game
@@ -199,9 +195,9 @@ unsigned short checkReels(unsigned char reel1, unsigned char reel2, unsigned cha
 		if(reel1 != reel2 && reel1 == reel3)
 		{
 			randomise();
-			winnings += 25;
+			winnings = 25;
 			winnings *= srand(random) % 7;
-			if(!winnings)
+			if(!winnings || !(random % 16))
 			{
 				winnings += 75;
 			}
