@@ -69,6 +69,8 @@ int main()
 	startGame();
 	pounds = 500;
 	playAgain();
+	cls();
+	printf("thanks for playing");
 	return 0;
 }
 
@@ -77,7 +79,7 @@ int main()
  */
 void playAgain()
 {
-	prompt("Y to play again", 2);
+	prompt("unfortunately your money is\nspent. the management do not\ngive credit. we welcome back\npaying customers who enter Y\nand press return, otherwise\nplease move along.", 2);
 	gets(_strBuffer);
 	if(_strBuffer[0] == 121)
 	{
@@ -125,7 +127,10 @@ void startGame()
 		winLine[0] = setReel(0);
 		winLine[1] = setReel(1);
 		winLine[2] = setReel(2);
-		printf("%c %c %c", winLine[0], winLine[1], winLine[2]);
+		printf("#######\n");
+		printf("#%c#%c#%c#\n", winLine[0], winLine[1], winLine[2]);
+		printf("####\"\"#\n");
+		printf("#######\n");
 		pounds += checkReels(winLine[0], winLine[1], winLine[2]);
 		pence = pounds % 100;
 		printf("\nMONEY REMAINING \xa3%d.%d", pounds / 100, pence);
@@ -197,7 +202,7 @@ unsigned short checkReels(unsigned char reel1, unsigned char reel2, unsigned cha
 			randomise();
 			winnings = 25;
 			winnings *= srand(random) % 7;
-			if(!winnings || !(random % 16))
+			if(!winnings)
 			{
 				winnings += 75;
 			}
