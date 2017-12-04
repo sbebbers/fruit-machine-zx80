@@ -47,14 +47,10 @@ unsigned char winLine[]		=
  */
 unsigned char REEL			= 16;
 unsigned short SPINCOST		= 25;
-unsigned short BONUS		= 50;
-unsigned short WINNING[5]	=
-{
-	100, 200, 400, 750, 1000
-};
-unsigned char REEL1[]		= "*$\xa3x*$*x*-x*x--*";
-unsigned char REEL2[]		= "\xa3x*$*x-*-x*-*x*$";
-unsigned char REEL3[]		= "x*$*x--*-x*x*$\xa3*";
+
+unsigned char REEL1[]		= "*$\xa3x*$*x*-x*x-x*";
+unsigned char REEL2[]		= "$\xa3x*$*x*-x*x-x**";
+unsigned char REEL3[]		= "\xa3x*$*x*-x*x-x**$";
 
 /**
  * Main entry point of game
