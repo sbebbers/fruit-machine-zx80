@@ -110,13 +110,13 @@ void titleScreen()
 	printf("5.00\neach spin costs");
 	printSpc(3,"\xa3" "0.25\nWIN TABLE:\n");
 	printTab(2,"\xa3 \xa3 \xa3 = \xa3" "10.00\n");
-	printTab(2, "$ $ $ = \xa3" "7.50\n");
-	printTab(2, "x x x = \xa3" "4.00\n");
-	printTab(2, "* * * = \xa3" "2.00\n");
-	printTab(2, "? ? - = \xa3" "1.00\n");
-	printTab(2, "? - ? = \xa3" "?.??\n");
-	printTab(2, "- - - = \xa3" "ZERO\n");
-	prompt("press any key to play", 2);
+	printTab(2, "$ $ $ =  \xa3" "7.50\n");
+	printTab(2, "x x x =  \xa3" "4.00\n");
+	printTab(2, "* * * =  \xa3" "2.00\n");
+	printTab(2, "? ? - =  \xa3" "1.00\n");
+	printTab(2, "? - ? =  \xa3" "?.??\n");
+	printTab(2, "- - - =  \xa3" "ZERO\n");
+	prompt("press the ANY KEY to play", 2);
 }
 
 /**
@@ -264,10 +264,9 @@ unsigned short checkReels(unsigned char reel1, unsigned char reel2, unsigned cha
  */
 void zx80Init()
 {
-	unsigned char y;
-	for(y = 24; y > 0; y--)
+	for(i = 24; y > 0; y--)
 	{
-		printf("                                \n");
+		printf("\n");
 	}
 	cls();
 }
