@@ -1,6 +1,5 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "zx80s.h"
 
 /**
  * Function prototypes
@@ -75,7 +74,12 @@ int main()
 }
 
 /**
+ * Prompts player, y restarts game,
+ * any other entry exits it
  *
+ * @author	sbebbington
+ * @date	3 Dec 2017
+ * @version	1.0
  */
 void playAgain()
 {
@@ -92,7 +96,7 @@ void playAgain()
  *
  * @param	na
  * @author	sbebbington
- * @date	26 Nov 2017
+ * @date	4 Dec 2017
  * @version	1.0
  */
 void titleScreen()
@@ -105,17 +109,22 @@ void titleScreen()
 	printf("5.00\neach spin costs");
 	printSpc(3,"\xa3" "0.25\nWIN TABLE:\n");
 	printTab(2,"\xa3 \xa3 \xa3 = \xa3" "10.00\n");
-	printTab(2, "$ $ $ = £7.50\n");
-	printTab(2, "x x x = £4.00\n");
-	printTab(2, "* * * = £2.00\n");
-	printTab(2, "? ? - = £1.00\n");
-	printTab(2, "? - ? = £?.??\n");
-	printTab(2, "- - - = £ZERO\n");
+	printTab(2, "$ $ $ = \xa3" "7.50\n");
+	printTab(2, "x x x = \xa3" "4.00\n");
+	printTab(2, "* * * = \xa3" "2.00\n");
+	printTab(2, "? ? - = \xa3" "1.00\n");
+	printTab(2, "? - ? = \xa3" "?.??\n");
+	printTab(2, "- - - = \xa3" "ZERO\n");
 	prompt("press any key to play", 2);
 }
 
 /**
+ * Starts the reels spinning,
+ * continues until GBP is 0
  *
+ * @author	sbebbington
+ * @date	4 Dec 2017
+ * @version	1.0
  */
 void startGame()
 {
@@ -145,7 +154,13 @@ void startGame()
 }
 
 /**
+ * Sets each reel position
  *
+ * @param	unsigned char
+ * @author	sbebbington
+ * @date	4 Dec 2017
+ * @version	1.0
+ * @return	unsigned char
  */
 unsigned char setReel(unsigned char reel)
 {
@@ -167,7 +182,14 @@ unsigned char setReel(unsigned char reel)
 }
 
 /**
+ * Checks to see if reels have
+ * matched
  *
+ * @param	unsigned char, unsigned char, unsigned char
+ * @author	sbebbington
+ * @date	26 Nov 2017
+ * @version	1.0
+ * @return	short
  */
 unsigned short checkReels(unsigned char reel1, unsigned char reel2, unsigned char reel3)
 {
@@ -176,7 +198,7 @@ unsigned short checkReels(unsigned char reel1, unsigned char reel2, unsigned cha
 	if(reel1 != 45){
 		if(reel1 == reel2 && reel1 == reel3)
 		{
-			if(reel1 == 0xa3)
+			if(reel1 == 163)
 			{
 				winnings = 1000;
 			}
@@ -267,7 +289,13 @@ void prompt(unsigned char txt[32], unsigned char lineNumber)
 }
 
 /**
+ * Simulates the BASIC PRINT SPC(x);"TEST"
+ * function
  *
+ * @param	unsigned char, unsigned char[]
+ * @author	sbebbington
+ * @date	27 Nov 2017
+ * @version	1.0
  */
 void printSpc(unsigned char spc, unsigned char txt[31])
 {
@@ -279,11 +307,16 @@ void printSpc(unsigned char spc, unsigned char txt[31])
 }
 
 /**
+ * Assumes 4 spaces is one tab (PRINT TAB(x);"TEST")
  *
+ * @param	unsigned char, unsigned char[]
+ * @author	sbebbington
+ * @date	27 Nov 2017
+ * @version	1.0
  */
 void printTab(unsigned char tab, unsigned char txt[28])
 {
-	tab = tab * 4;
+	tab *= 4;
 	printSpc(tab, txt);
 }
 
