@@ -264,7 +264,7 @@ unsigned short checkReels(unsigned char reel1, unsigned char reel2, unsigned cha
  */
 void zx80Init()
 {
-	for(i = 24; y > 0; y--)
+	for(i = 24; i > 0; i--)
 	{
 		printf("\n");
 	}
