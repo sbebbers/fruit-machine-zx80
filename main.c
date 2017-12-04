@@ -69,7 +69,9 @@ int main()
 	pounds = 500;
 	playAgain();
 	cls();
-	printf("thanks for playing");
+	prompt("THANKS FOR PLAYING", 1);
+	gets(_strBuffer);
+	zx80Init();
 	return 0;
 }
 
@@ -109,13 +111,13 @@ void titleScreen()
 	printTab(1,"\xa3");
 	printf("5.00\neach spin costs");
 	printSpc(3,"\xa3" "0.25\nWIN TABLE:\n");
-	printTab(2,"\xa3 \xa3 \xa3 = \xa3" "10.00\n");
-	printTab(2, "$ $ $ =  \xa3" "7.50\n");
-	printTab(2, "x x x =  \xa3" "4.00\n");
-	printTab(2, "* * * =  \xa3" "2.00\n");
-	printTab(2, "? ? - =  \xa3" "1.00\n");
-	printTab(2, "? - ? =  \xa3" "?.??\n");
-	printTab(2, "- - - =  \xa3" "ZERO\n");
+	printTab(2,"\xa3 \xa3 \xa3 pays out \xa3" "10.00\n");
+	printTab(2, "$ $ $ pays out  \xa3" "7.50\n");
+	printTab(2, "x x x pays out  \xa3" "4.00\n");
+	printTab(2, "* * * pays out  \xa3" "2.00\n");
+	printTab(2, "? ? - pays out  \xa3" "1.00\n");
+	printTab(2, "? - ? pays out  \xa3" "?.??\n");
+	printTab(2, "- - - pays out  \xa3" "ZERO\n");
 	prompt("press the ANY KEY to play", 2);
 }
 
@@ -144,11 +146,14 @@ void startGame()
 		printf("####\"\"#\n");
 		printf("#######\n");
 		favourComputer = checkReels(winLine[0], winLine[1], winLine[2]);
-		if(favourComputer && !random % REEL)
+		if(favourComputer && !random % 6)
 		{
-			winLine[1] = setReel(1);
-			winLine[2] = setReel(2);
-			favourComputer = checkReels(winLine[0], winLine[1], winLine[2]);
+			while(favourComputer)
+			{
+				winLine[1] = setReel(1);
+				winLine[2] = setReel(2);
+				favourComputer = checkReels(winLine[0], winLine[1], winLine[2]);
+			}
 		}
 		pounds += favourComputer;
 		pence = pounds % 100;
