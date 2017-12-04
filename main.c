@@ -83,7 +83,7 @@ int main()
  */
 void playAgain()
 {
-	printf("unfortunately your money is\nspent. the management do not\ngive credit. we welcome back\npaying customers who enter Y\nand press return, otherwise\nplease move along.");
+	printf("unfortunately your money is\nspent. the management do not\ngive credit. we welcome back\npaying customers who enter Y\nand press RETURN, otherwise\nplease move along.");
 	prompt("", 2);
 	gets(_strBuffer);
 	if(_strBuffer[0] == 121)
