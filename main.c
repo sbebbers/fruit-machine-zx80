@@ -195,9 +195,9 @@ unsigned short checkReels(unsigned char reel1, unsigned char reel2, unsigned cha
 		if(reel1 != reel2 && reel1 == reel3)
 		{
 			randomise();
-			winnings += 25;
+			winnings = 25;
 			winnings *= srand(random) % 7;
-			if(!winnings)
+			if(!winnings || !(random % 16))
 			{
 				winnings += 75;
 			}
