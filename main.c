@@ -126,14 +126,14 @@ void titleScreen()
  */
 void startGame()
 {
-	unsigned char _reel, pence = 0;
+	unsigned char _reel;
 	unsigned short favourComputer;
 	pounds = 500;
 	while(pounds)
 	{
 		cls();
 		favourComputer = 0;
-		pounds -= 25;
+		pounds -= SPINCOST;
 		winLine[0] = setReel(0);
 		winLine[1] = setReel(1);
 		winLine[2] = setReel(2);
@@ -142,7 +142,7 @@ void startGame()
 		printf("####\"\"#\n");
 		printf("#######\n");
 		favourComputer = getWinningAmount(winLine[0], winLine[1], winLine[2]);
-		if(favourComputer && !random % 5)
+		if(favourComputer && !random % 5 || (!random - 1))
 		{
 			while(favourComputer)
 			{
@@ -153,9 +153,8 @@ void startGame()
 			}
 		}
 		pounds += favourComputer;
-		pence = pounds % 100;
-		printf("\nMONEY REMAINING \xa3%d.%d", pounds / 100, pence);
-		if(!pence)
+		printf("\nMONEY REMAINING \xa3%d.%d", pounds / 100, pounds % 100);
+		if(pounds % 100 == 0)
 		{
 			printf("0");
 		}
@@ -205,6 +204,10 @@ unsigned char setReel(unsigned char reel)
 	{
 		reelPos = REEL3[random % REEL];
 	}
+	if(!random % 8)
+	{
+		setReel(reel);
+	}
 	return reelPos;
 }
 
@@ -221,7 +224,6 @@ unsigned char setReel(unsigned char reel)
 unsigned short getWinningAmount(unsigned char reel1, unsigned char reel2, unsigned char reel3)
 {
 	unsigned short winnings = 0;
-	unsigned char pennies = 0;
 	if(reel1 != 45){
 		if(reel1 == reel2 && reel1 == reel3)
 		{
@@ -249,7 +251,7 @@ unsigned short getWinningAmount(unsigned char reel1, unsigned char reel2, unsign
 		if(reel1 != reel2 && reel1 == reel3)
 		{
 			randomise();
-			winnings = 25;
+			winnings = SPINCOST;
 			winnings *= random % 7;
 			if(!winnings)
 			{
@@ -258,9 +260,8 @@ unsigned short getWinningAmount(unsigned char reel1, unsigned char reel2, unsign
 		}
 		if(winnings)
 		{
-			pennies = winnings % 100;
-			printf("\nyou win \xa3%d.%d", winnings / 100, pennies);
-			if(!pennies)
+			printf("\nyou win \xa3%d.%d", winnings / 100, winnings % 100);
+			if(winnings % 100 == 0)
 			{
 				printf("0");
 			}
