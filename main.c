@@ -149,6 +149,7 @@ void startGame()
 				winLine[1] = setReel(1);
 				winLine[2] = setReel(2);
 				favourComputer = getWinningAmount(winLine[0], winLine[1], winLine[2]);
+				randomise();
 			}
 		}
 		pounds += favourComputer;
@@ -194,15 +195,15 @@ unsigned char setReel(unsigned char reel)
 	randomise();
 	if(!reel)
 	{
-		reelPos = REEL1[srand(random) % REEL];
+		reelPos = REEL1[random % REEL];
 	}
 	else if(reel == 1)
 	{
-		reelPos = REEL2[srand(random) % REEL];
+		reelPos = REEL2[random % REEL];
 	}
 	else
 	{
-		reelPos = REEL3[srand(random) % REEL];
+		reelPos = REEL3[random % REEL];
 	}
 	return reelPos;
 }
@@ -249,7 +250,7 @@ unsigned short getWinningAmount(unsigned char reel1, unsigned char reel2, unsign
 		{
 			randomise();
 			winnings = 25;
-			winnings *= srand(random) % 7;
+			winnings *= random % 7;
 			if(!winnings)
 			{
 				winnings += 75;
