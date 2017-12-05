@@ -4,14 +4,15 @@
 /**
  * Function prototypes
  */
-int main();
+void main();
 
 /**
  * Game function prototypes
  */
-unsigned short checkReels(unsigned char reel1, unsigned char reel2, unsigned char reel3);
+unsigned short getWinningAmount(unsigned char reel1, unsigned char reel2, unsigned char reel3);
 unsigned char setReel(unsigned char reel);
 void startGame();
+void endGame();
 void titleScreen();
 void playAgain();
 
@@ -28,14 +29,14 @@ void zx80Init();
 /**
  * Reusable/API variables
  */
-unsigned char _strBuffer[33];
+unsigned char stringBuffer[33];
 unsigned char random;
 unsigned char i;
 
 /**
  * Game variables
  */
-unsigned short pounds		= 500;
+unsigned short pounds;
 unsigned char winLine[]		=
 {
 	45, 45, 45
@@ -59,20 +60,10 @@ unsigned char REEL3[]		= "\xa3x*$*x*-x*x-x**$";
  * @date	26 Nov 2017
  * @version	1.0
  */
-int main()
+void main()
 {
 	zx80Init();
 	titleScreen();
-	gets(_strBuffer);
-	randomise();
-	startGame();
-	pounds = 500;
-	playAgain();
-	cls();
-	prompt("THANKS FOR PLAYING", 1);
-	gets(_strBuffer);
-	zx80Init();
-	return 0;
 }
 
 /**
@@ -87,11 +78,12 @@ void playAgain()
 {
 	printf("unfortunately your money is\nspent. the management do not\ngive credit. we welcome back\npaying customers who enter Y\nand press RETURN, otherwise\nplease move along.");
 	prompt("", 2);
-	gets(_strBuffer);
-	if(_strBuffer[0] == 121)
+	gets(stringBuffer);
+	if(stringBuffer[0] == 121)
 	{
-		main();
+		titleScreen();
 	}
+	endGame();
 }
 
 /**
@@ -104,6 +96,7 @@ void playAgain()
  */
 void titleScreen()
 {
+	cls();
 	printSpc(7, "donkeysoft  mmxvii\n\n");
 	printSpc(4, "and monument  microgames\n\n");
 	printSpc(12, "presents\n\n");
@@ -119,6 +112,8 @@ void titleScreen()
 	printTab(2, "? - ? pays out  \xa3" "?.??\n");
 	printTab(2, "- - - pays out  \xa3" "ZERO\n");
 	prompt("press the ANY KEY to play", 2);
+	gets(stringBuffer);
+	startGame();
 }
 
 /**
@@ -133,6 +128,7 @@ void startGame()
 {
 	unsigned char _reel, pence = 0;
 	unsigned short favourComputer;
+	pounds = 500;
 	while(pounds)
 	{
 		cls();
@@ -145,14 +141,14 @@ void startGame()
 		printf("#%c#%c#%c#\n", winLine[0], winLine[1], winLine[2]);
 		printf("####\"\"#\n");
 		printf("#######\n");
-		favourComputer = checkReels(winLine[0], winLine[1], winLine[2]);
+		favourComputer = getWinningAmount(winLine[0], winLine[1], winLine[2]);
 		if(favourComputer && !random % 6)
 		{
 			while(favourComputer)
 			{
 				winLine[1] = setReel(1);
 				winLine[2] = setReel(2);
-				favourComputer = checkReels(winLine[0], winLine[1], winLine[2]);
+				favourComputer = getWinningAmount(winLine[0], winLine[1], winLine[2]);
 			}
 		}
 		pounds += favourComputer;
@@ -164,8 +160,23 @@ void startGame()
 		}
 		prompt("", 2);
 		
-		gets(_strBuffer);
+		gets(stringBuffer);
 	}
+	playAgain();
+}
+
+/**
+ * The end is nigh
+ *
+ * @author	sbebbington
+ * @date	5 Dec 2017
+ */
+void endGame()
+{
+	cls();
+	prompt("THANKS FOR PLAYING", 1);
+	gets(stringBuffer);
+	zx80Init();
 }
 
 /**
@@ -204,9 +215,9 @@ unsigned char setReel(unsigned char reel)
  * @author	sbebbington
  * @date	26 Nov 2017
  * @version	1.0
- * @return	short
+ * @return	unsigned short
  */
-unsigned short checkReels(unsigned char reel1, unsigned char reel2, unsigned char reel3)
+unsigned short getWinningAmount(unsigned char reel1, unsigned char reel2, unsigned char reel3)
 {
 	unsigned short winnings = 0;
 	unsigned char pennies = 0;
