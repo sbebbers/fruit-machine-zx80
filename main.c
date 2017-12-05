@@ -142,7 +142,7 @@ void startGame()
 		printf("####\"\"#\n");
 		printf("#######\n");
 		favourComputer = getWinningAmount(winLine[0], winLine[1], winLine[2]);
-		if(favourComputer && !random % 5 || (!random - 1))
+		if(favourComputer && (!random % 5 || !random))
 		{
 			while(favourComputer)
 			{
