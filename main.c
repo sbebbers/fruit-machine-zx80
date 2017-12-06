@@ -36,7 +36,7 @@ unsigned char i;
 /**
  * Game variables
  */
-unsigned short pounds;
+unsigned short pounds, bank;
 unsigned char winLine[]		=
 {
 	45, 45, 45
@@ -76,7 +76,14 @@ void main()
  */
 void playAgain()
 {
-	printf("unfortunately your money is\nspent. the management do not\ngive credit. we welcome back\npaying customers who enter Y\nand press RETURN, otherwise\nplease move along.");
+	if(!bank)
+	{
+		printf("unfortunately your money is\nspent. the management do not\ngive credit. we welcome back\npaying customers who enter R\nand press RETURN, otherwise\nplease move along.");
+	}
+	else
+	{
+		printf("you have banked some monies in\nthe bank, enter the amount that\nyou would like to re-invest in\nour fantastic fruit machine or\nenter R to return to the title\nscreen\n");
+	}
 	prompt("", 2);
 	gets(stringBuffer);
 	if(stringBuffer[0] == 121)
@@ -100,7 +107,7 @@ void titleScreen()
 	printSpc(7, "donkeysoft  mmxvii\n\n");
 	printSpc(4, "and monument  microgames\n\n");
 	printSpc(12, "presents\n\n");
-	printSpc(10, "QuIcK FrUiTs\n\nyou start with");
+	printSpc(8, "QuIcK FrUiTs++\n\nyou start with");
 	printTab(1,"\xa3");
 	printf("5.00\neach spin costs");
 	printSpc(3,"\xa3" "0.25\nWIN TABLE:\n");
@@ -129,6 +136,8 @@ void startGame()
 	unsigned char _reel;
 	unsigned short favourComputer;
 	pounds = 500;
+	bank = 0;
+	restart:
 	while(pounds)
 	{
 		cls();
@@ -152,7 +161,13 @@ void startGame()
 				randomise();
 			}
 		}
-		pounds += favourComputer;
+		bank += favourComputer;
+		printf("\ncurrent winnings \xa3%d.%d", bank / 100, bank % 100);
+		if(bank % 100 == 0)
+		{
+			printf("0");
+		}
+		printf("\n");
 		printf("\nMONEY REMAINING \xa3%d.%d", pounds / 100, pounds % 100);
 		if(pounds % 100 == 0)
 		{
@@ -162,7 +177,7 @@ void startGame()
 		
 		gets(stringBuffer);
 	}
-	playAgain();
+	playAgain(bank);
 }
 
 /**
@@ -260,12 +275,7 @@ unsigned short getWinningAmount(unsigned char reel1, unsigned char reel2, unsign
 		}
 		if(winnings)
 		{
-			printf("\nyou win \xa3%d.%d", winnings / 100, winnings % 100);
-			if(winnings % 100 == 0)
-			{
-				printf("0");
-			}
-			printf("\n");
+
 		}
 	}
 	return winnings;
