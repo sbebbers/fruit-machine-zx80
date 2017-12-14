@@ -22,6 +22,7 @@ void playAgain();
 void cls();
 void printSpc(unsigned char spc, unsigned char txt[31]);
 void printTab(unsigned char tab, unsigned char txt[28]);
+void printCurrency(unsigned short amount, unsigned char newLine);
 void prompt(unsigned char txt[32], unsigned char lineNumber);
 void randomise();
 void zx80Init();
@@ -37,7 +38,7 @@ unsigned char i;
  * Game variables
  */
 unsigned short pounds, bank;
-unsigned char winLine[]		=
+unsigned char winLine[]	=
 {
 	45, 45, 45
 };
@@ -45,12 +46,12 @@ unsigned char winLine[]		=
 /**
  * Game constants
  */
-unsigned char REEL			= 16;
-unsigned short SPINCOST		= 25;
+unsigned char REEL		= 16;
+unsigned short SPINCOST	= 25;
 
-unsigned char REEL1[]		= "*$\xa3x*$*x*-x*x-x*";
-unsigned char REEL2[]		= "$\xa3x*$*x*-x*x-x**";
-unsigned char REEL3[]		= "\xa3x*$*x*-x*x-x**$";
+unsigned char REEL1[]	= "*$\xa3x*$*x*-x*x-x*";
+unsigned char REEL2[]	= "$\xa3x*$*x*-x*x-x**";
+unsigned char REEL3[]	= "\xa3x*$*x*-x*x-x**$";
 
 /**
  * Main entry point of game
@@ -108,10 +109,10 @@ void titleScreen()
 	printSpc(4, "and monument  microgames\n\n");
 	printSpc(12, "presents\n\n");
 	printSpc(8, "QuIcK FrUiTs++\n\nyou start with");
-	printTab(1,"\xa3");
+	printTab(1, "\xa3");
 	printf("5.00\neach spin costs");
-	printSpc(3,"\xa3" "0.25\nWIN TABLE:\n");
-	printTab(2,"\xa3 \xa3 \xa3 pays out \xa3" "10.00\n");
+	printSpc(3, "\xa3" "0.25\nWIN TABLE:\n");
+	printTab(2, "\xa3 \xa3 \xa3 pays out \xa3" "10.00\n");
 	printTab(2, "$ $ $ pays out  \xa3" "7.50\n");
 	printTab(2, "x x x pays out  \xa3" "4.00\n");
 	printTab(2, "* * * pays out  \xa3" "2.00\n");
@@ -143,13 +144,16 @@ void startGame()
 		cls();
 		favourComputer = 0;
 		pounds -= SPINCOST;
+
 		winLine[0] = setReel(0);
 		winLine[1] = setReel(1);
 		winLine[2] = setReel(2);
+
 		printf("#######\n");
 		printf("#%c#%c#%c#\n", winLine[0], winLine[1], winLine[2]);
 		printf("####\"\"#\n");
 		printf("#######\n");
+
 		favourComputer = getWinningAmount(winLine[0], winLine[1], winLine[2]);
 		if(favourComputer && (!random % 5 || !random))
 		{
@@ -162,19 +166,14 @@ void startGame()
 			}
 		}
 		bank += favourComputer;
-		printf("\ncurrent winnings \xa3%d.%d", bank / 100, bank % 100);
-		if(bank % 100 == 0)
-		{
-			printf("0");
-		}
-		printf("\n");
-		printf("\nMONEY REMAINING \xa3%d.%d", pounds / 100, pounds % 100);
-		if(pounds % 100 == 0)
-		{
-			printf("0");
-		}
+
+		printf("\ncurrent winnings ");
+		printCurrency(bank, 1);
+
+		printf("\nMONEY REMAINING ");
+		printCurrency(pounds, 0);
+
 		prompt("", 2);
-		
 		gets(stringBuffer);
 	}
 	playAgain(bank);
@@ -239,7 +238,8 @@ unsigned char setReel(unsigned char reel)
 unsigned short getWinningAmount(unsigned char reel1, unsigned char reel2, unsigned char reel3)
 {
 	unsigned short winnings = 0;
-	if(reel1 != 45){
+	if(reel1 != 45)
+	{
 		if(reel1 == reel2 && reel1 == reel3)
 		{
 			if(reel1 == 163)
@@ -267,15 +267,11 @@ unsigned short getWinningAmount(unsigned char reel1, unsigned char reel2, unsign
 		{
 			randomise();
 			winnings = SPINCOST;
-			winnings *= random % 7;
+			winnings *= random % 8;
 			if(!winnings)
 			{
 				winnings += 75;
 			}
-		}
-		if(winnings)
-		{
-
 		}
 	}
 	return winnings;
@@ -355,6 +351,27 @@ void printTab(unsigned char tab, unsigned char txt[28])
 {
 	tab *= 4;
 	printSpc(tab, txt);
+}
+
+/**
+ * Prints the amount to two decimal places
+ *
+ * @param	unsigned short amount
+ * @authod	sbebbington
+ * @date	14 Dec 2017
+ * @version 1.0
+ */
+void printCurrency(unsigned short amount, unsigned char newLine)
+{
+	printf("\xa3%d.%d", amount / 100, amount % 100);
+	if(amount % 100 == 0)
+	{
+		printf("0");
+	}
+	if(newLine)
+	{
+		printf("\n");
+	}
 }
 
 /**
