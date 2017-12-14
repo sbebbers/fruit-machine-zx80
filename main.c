@@ -109,7 +109,7 @@ void titleScreen()
 	printSpc(7, "donkeysoft  mmxvii\n\n");
 	printSpc(4, "and monument  microgames\n\n");
 	printSpc(12, "presents\n\n");
-	printSpc(8, "QuIcK FrUiTs++\n\nyou start with");
+	printSpc(10, "QuIcK FrUiTs++\n\nyou start with");
 	printTab(1, "\xa3");
 	printf("5.00\neach spin costs");
 	printSpc(3, "\xa3" "0.25\nWIN TABLE:\n");
