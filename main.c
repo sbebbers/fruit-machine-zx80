@@ -74,6 +74,7 @@ void main()
  * @author	sbebbington
  * @date	3 Dec 2017
  * @version	1.0
+ * @todo	Handle the user inputs better
  */
 void playAgain()
 {
@@ -83,7 +84,7 @@ void playAgain()
 	}
 	else
 	{
-		printf("you have banked some monies in\nthe bank, enter the amount that\nyou would like to re-invest in\nour fantastic fruit machine or\nenter R to return to the title\nscreen\n");
+		printf("you have banked some monies in\nenter the amount that you would\nlike to re-invest in our superb\nfruit machine or enter R to\nreturn to the title screen\n");
 	}
 	prompt("", 2);
 	gets(stringBuffer);
@@ -165,9 +166,14 @@ void startGame()
 				randomise();
 			}
 		}
-		bank += favourComputer;
-
-		printf("\ncurrent winnings ");
+		if(favourComputer > 0)
+		{
+			printf("\nYOU WIN ");
+			printCurrency(favourComputer, 1);
+			bank += favourComputer;
+		}
+		
+		printf("\ncurrently banked ");
 		printCurrency(bank, 1);
 
 		printf("\nMONEY REMAINING ");
@@ -267,7 +273,7 @@ unsigned short getWinningAmount(unsigned char reel1, unsigned char reel2, unsign
 		{
 			randomise();
 			winnings = SPINCOST;
-			winnings *= random % 8;
+			winnings *= random % 7;
 			if(!winnings)
 			{
 				winnings += 75;
