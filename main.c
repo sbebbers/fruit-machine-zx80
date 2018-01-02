@@ -10,6 +10,7 @@ void main();
  * Game function prototypes
  */
 unsigned short getWinningAmount(unsigned char reel1, unsigned char reel2, unsigned char reel3);
+unsigned short getValueEntered();
 unsigned char setReel(unsigned char reel);
 void startGame();
 void endGame();
@@ -65,34 +66,6 @@ void main()
 {
 	zx80Init();
 	titleScreen();
-}
-
-/**
- * Prompts player, y restarts game,
- * any other entry exits it
- *
- * @author	sbebbington
- * @date	3 Dec 2017
- * @version	1.0
- * @todo	Handle the user inputs better
- */
-void playAgain()
-{
-	if(!bank)
-	{
-		printf("unfortunately your money is\nspent. the management do not\ngive credit. we welcome back\npaying customers who enter R\nand press RETURN, otherwise\nplease move along.");
-	}
-	else
-	{
-		printf("you have banked some monies in\nenter the amount that you would\nlike to re-invest in our superb\nfruit machine or enter R to\nreturn to the title screen\n");
-	}
-	prompt("", 2);
-	gets(stringBuffer);
-	if(stringBuffer[0] == 121)
-	{
-		titleScreen();
-	}
-	endGame();
 }
 
 /**
@@ -172,6 +145,10 @@ void startGame()
 			printCurrency(favourComputer, 1);
 			bank += favourComputer;
 		}
+		if(pounds == 25)
+		{
+			printf("\nYOUR LAST ROLL OF THE REELS");
+		}
 		
 		printf("\ncurrently banked ");
 		printCurrency(bank, 1);
@@ -186,6 +163,43 @@ void startGame()
 }
 
 /**
+ * Prompts player, y restarts game,
+ * any other entry exits it
+ *
+ * @author	sbebbington
+ * @date	3 Dec 2017
+ * @version	1.0
+ * @todo	Handle the user inputs better
+ */
+void playAgain()
+{
+	unsigned char _bank = 0;
+	cls();
+	if(!bank)
+	{
+		printf("unfortunately your money is\nspent. the management do not\ngive credit. we welcome back\npaying customers who enter R\nand press RETURN, otherwise\nplease move along.");
+	}
+	else
+	{
+		printf("you have banked some monies in\nenter the amount that you would\nlike to re-invest in our superb\nfruit machine or enter 0\n(zero) to return to start again\n");
+		printf("YOU HAVE ");
+		printCurrency(bank, 1);
+	}
+	for(i=32; i>0; i--)
+	{
+		stringBuffer[i] = 0xff;
+	}
+	prompt("", 2);
+	gets(stringBuffer);
+	_bank = getValueEntered();
+	if(_bank > bank || _bank < 1)
+	{
+		titleScreen();
+	}
+	endGame();
+}
+
+/**
  * The end is nigh
  *
  * @author	sbebbington
@@ -197,6 +211,30 @@ void endGame()
 	prompt("THANKS FOR PLAYING", 1);
 	gets(stringBuffer);
 	zx80Init();
+}
+
+/**
+ * Converts the stringBuffer to an
+ * unsigned short (removing the . or , separator)
+ *
+ * @author	sbebbington
+ * @date	2 Jan 2018
+ */
+unsigned short getValueEntered()
+{
+	unsigned char v = 5;
+	unsigned char value[5] = "\x00\x00\x00\x00\x00";
+	i = 6;
+	while(i)
+	{
+		if(stringBuffer[i] >= 48 && stringBuffer[i] <= 57)
+		{
+			value[v] = stringBuffer[i]-48;
+			v--;
+		}
+		i--;
+	}
+	returnValue (value[4]+(value[3]*10)+(value[2]*100)+(value[1]*1000)+(value[0]*10000));
 }
 
 /**
