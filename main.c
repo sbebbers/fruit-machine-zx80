@@ -83,8 +83,15 @@ void titleScreen()
 	printSpc(4, "and monument  microgames\n\n");
 	printSpc(12, "presents\n\n");
 	printSpc(10, "QuIcK FrUiTs++\n\nyou start with");
-	printTab(1, "\xa3");
-	printf("5.00\neach spin costs");
+	if(bank > 0)
+	{
+		printCurrency(bank, 1);
+	}
+	else
+	{
+		printCurrency(500, 1);
+	}
+	printf("each spin costs");
 	printSpc(3, "\xa3" "0.25\nWIN TABLE:\n");
 	printTab(2, "\xa3 \xa3 \xa3 pays out \xa3" "10.00\n");
 	printTab(2, "$ $ $ pays out  \xa3" "7.50\n");
