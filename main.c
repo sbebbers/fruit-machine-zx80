@@ -187,7 +187,6 @@ void startGame()
  */
 void playAgain()
 {
-	unsigned char _bank = 0;
 	cls();
 	if(!bank)
 	{
@@ -195,7 +194,7 @@ void playAgain()
 	}
 	else
 	{
-		printf("you have banked some monies in\nenter the amount that you would\nlike to re-invest in our superb\nfruit machine or enter 0\n(zero) to return to start again\n");
+		printf("You have banked some money.\nenter the amount that you would\nlike to re-invest in our superb\nfruit machine or enter 0\n(zero) to return to the start\n");
 		printf("YOU HAVE ");
 		printCurrency(bank, 1);
 	}
@@ -205,16 +204,21 @@ void playAgain()
 	}
 	prompt("", 2);
 	gets(stringBuffer);
-	_bank = getValueEntered();
-	if(_bank > bank || _bank < 1)
+	
+	pounds = getValueEntered();
+	
+	printCurrency(pounds,1);
+	printCurrency(bank,1);
+	prompt("",1);
+	gets(stringBuffer);
+	
+	if(pounds > 0)
+	{
+		startGame();
+	}
+	else if(stringBuffer[0] == "r" || stringBuffer[0] == "0")
 	{
 		titleScreen();
-	}
-	else
-	{
-		pounds = _bank;
-		bank -= pounds;
-		startGame();
 	}
 	endGame();
 }
@@ -244,21 +248,23 @@ void endGame()
  */
 unsigned short getValueEntered()
 {
-	unsigned char v = 5;
+	unsigned short val = 5;
 	unsigned char value[5] = "\x00\x00\x00\x00\x00";
 	i = 6;
 	while(i)
 	{
 		if(stringBuffer[i] >= 48 && stringBuffer[i] <= 57)
 		{
-			value[v] = stringBuffer[i]-48;
-			v--;
+			value[val] = stringBuffer[i]-48;
+			val--;
 		}
 		i--;
 	}
-	if(!bank % 25)
+	val = value[4]+(value[3]*10)+(value[2]*100)+(value[1]*1000)+(value[0]*10000);
+	if(val <= bank && val % 25 == 0)
 	{
-		return (value[4]+(value[3]*10)+(value[2]*100)+(value[1]*1000)+(value[0]*10000));
+		bank -= val;
+		return val;
 	}
 	return 0;
 }
