@@ -73,16 +73,16 @@ void main()
  *
  * @param	na
  * @author	sbebbington
- * @date	4 Dec 2017
+ * @date	2 Jan 2018
  * @version	1.0
  */
 void titleScreen()
 {
 	cls();
-	printSpc(7, "donkeysoft  mmxvii\n\n");
+	printSpc(7, "donkeysoft mmxviii\n\n");
 	printSpc(4, "and monument  microgames\n\n");
 	printSpc(12, "presents\n\n");
-	printSpc(10, "QuIcK FrUiTs++\n\nyou start with");
+	printSpc(10, "QuIcK FrUiTs++\n\nyou start with ");
 	if(bank > 0)
 	{
 		printCurrency(bank, 1);
@@ -181,7 +181,7 @@ void startGame()
  * any other entry exits it
  *
  * @author	sbebbington
- * @date	3 Dec 2017
+ * @date	2 Jan 2018
  * @version	1.0
  * @todo	Handle the user inputs better
  */
@@ -223,13 +223,13 @@ void playAgain()
  * The end is nigh
  *
  * @author	sbebbington
- * @date	5 Dec 2017
+ * @date	2 Jan 2018
  */
 void endGame()
 {
 	cls();
 	printf("DONKEYSOFT MMXVII - MMXVIII");
-	printf("\nhApPy NeW YeAr");
+	printf("\n\nhApPy NeW YeAr");
 	prompt("THANKS FOR PLAYING", 1);
 	gets(stringBuffer);
 	zx80Init();
@@ -258,7 +258,7 @@ unsigned short getValueEntered()
 	}
 	if(!bank % 25)
 	{
-		returnValue (value[4]+(value[3]*10)+(value[2]*100)+(value[1]*1000)+(value[0]*10000));
+		return (value[4]+(value[3]*10)+(value[2]*100)+(value[1]*1000)+(value[0]*10000));
 	}
 	return 0;
 }
