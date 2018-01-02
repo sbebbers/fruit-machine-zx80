@@ -22,6 +22,7 @@ void playAgain();
 void cls();
 void printSpc(unsigned char spc, unsigned char txt[31]);
 void printTab(unsigned char tab, unsigned char txt[28]);
+void printCurrency(unsigned short amount, unsigned char newLine);
 void prompt(unsigned char txt[32], unsigned char lineNumber);
 void randomise();
 void zx80Init();
@@ -36,8 +37,8 @@ unsigned char i;
 /**
  * Game variables
  */
-unsigned short pounds;
-unsigned char winLine[]		=
+unsigned short pounds, bank;
+unsigned char winLine[]	=
 {
 	45, 45, 45
 };
@@ -45,12 +46,12 @@ unsigned char winLine[]		=
 /**
  * Game constants
  */
-unsigned char REEL			= 16;
-unsigned short SPINCOST		= 25;
+unsigned char REEL		= 16;
+unsigned short SPINCOST	= 25;
 
-unsigned char REEL1[]		= "*$\xa3x*$*x*-x*x-x*";
-unsigned char REEL2[]		= "$\xa3x*$*x*-x*x-x**";
-unsigned char REEL3[]		= "\xa3x*$*x*-x*x-x**$";
+unsigned char REEL1[]	= "*$\xa3x*$*x*-x*x-x*";
+unsigned char REEL2[]	= "$\xa3x*$*x*-x*x-x**";
+unsigned char REEL3[]	= "\xa3x*$*x*-x*x-x**$";
 
 /**
  * Main entry point of game
@@ -67,44 +68,32 @@ void main()
 }
 
 /**
- * Prompts player, y restarts game,
- * any other entry exits it
- *
- * @author	sbebbington
- * @date	3 Dec 2017
- * @version	1.0
- */
-void playAgain()
-{
-	printf("unfortunately your money is\nspent. the management do not\ngive credit. we welcome back\npaying customers who enter Y\nand press RETURN, otherwise\nplease move along.");
-	prompt("", 2);
-	gets(stringBuffer);
-	if(stringBuffer[0] == 121)
-	{
-		titleScreen();
-	}
-	endGame();
-}
-
-/**
  * Show title screen
  *
  * @param	na
  * @author	sbebbington
- * @date	4 Dec 2017
+ * @date	2 Jan 2018
  * @version	1.0
  */
 void titleScreen()
 {
 	cls();
-	printSpc(7, "donkeysoft  mmxvii\n\n");
+	printSpc(7, "donkeysoft mmxviii\n\n");
 	printSpc(4, "and monument  microgames\n\n");
 	printSpc(12, "presents\n\n");
-	printSpc(10, "QuIcK FrUiTs\n\nyou start with");
-	printTab(1,"\xa3");
-	printf("5.00\neach spin costs");
-	printSpc(3,"\xa3" "0.25\nWIN TABLE:\n");
-	printTab(2,"\xa3 \xa3 \xa3 pays out \xa3" "10.00\n");
+	printSpc(10, "QuIcK FrUiTs++\n\nyou start with");
+	printSpc(4,"");
+	if(bank > 0)
+	{
+		printCurrency(bank, 1);
+	}
+	else
+	{
+		printCurrency(500, 1);
+	}
+	printf("each spin costs");
+	printSpc(3, "\xa3" "0.25\nWIN TABLE:\n");
+	printTab(2, "\xa3 \xa3 \xa3 pays out \xa3" "10.00\n");
 	printTab(2, "$ $ $ pays out  \xa3" "7.50\n");
 	printTab(2, "x x x pays out  \xa3" "4.00\n");
 	printTab(2, "* * * pays out  \xa3" "2.00\n");
@@ -128,19 +117,31 @@ void startGame()
 {
 	unsigned char _reel;
 	unsigned short favourComputer;
-	pounds = 500;
+	if(bank > 0 && pounds == 0)
+	{
+		pounds = bank;
+	}
+	else
+	{
+		pounds = 500;
+	}
+	bank = 0;
+
 	while(pounds)
 	{
 		cls();
 		favourComputer = 0;
 		pounds -= SPINCOST;
+
 		winLine[0] = setReel(0);
 		winLine[1] = setReel(1);
 		winLine[2] = setReel(2);
+
 		printf("#######\n");
 		printf("#%c#%c#%c#\n", winLine[0], winLine[1], winLine[2]);
 		printf("####\"\"#\n");
 		printf("#######\n");
+
 		favourComputer = getWinningAmount(winLine[0], winLine[1], winLine[2]);
 		if(favourComputer && (!random % 5 || !random))
 		{
@@ -152,31 +153,76 @@ void startGame()
 				randomise();
 			}
 		}
-		pounds += favourComputer;
-		printf("\nMONEY REMAINING \xa3%d.%d", pounds / 100, pounds % 100);
-		if(pounds % 100 == 0)
+		if(favourComputer > 0)
 		{
-			printf("0");
+			printf("\nYOU WIN ");
+			printCurrency(favourComputer, 1);
+			bank += favourComputer;
 		}
-		prompt("", 2);
+		if(pounds == 25)
+		{
+			printf("\nYOUR LAST ROLL OF THE REELS");
+		}
 		
+		printf("\ncurrently banked ");
+		printCurrency(bank, 1);
+
+		printf("\nMONEY REMAINING ");
+		printCurrency(pounds, 0);
+
+		prompt("", 2);
 		gets(stringBuffer);
 	}
-	playAgain();
+	playAgain(bank);
+}
+
+/**
+ * Prompts player, y restarts game,
+ * any other entry exits it
+ *
+ * @author	sbebbington
+ * @date	2 Jan 2018
+ * @version	1.0
+ * @todo	Handle the user inputs better
+ */
+void playAgain()
+{
+	cls();
+	if(!bank)
+	{
+		printf("unfortunately your money is\nspent. the management do not\ngive credit. we welcome back\npaying customers\n");
+	}
+	else
+	{
+		printf("You have banked some money.\nthis money may be re-invested in\nour fruit machine\n");
+		printf("YOU HAVE ");
+		printCurrency(bank, 1);
+	}
+	printf("enter R and press RETURN\nto replay");
+	stringBuffer[0] = 0xff;
+	prompt("", 2);
+	gets(stringBuffer);
+	
+	if(stringBuffer[0] == 82 || stringBuffer[0] == 114)
+	{
+		titleScreen();
+	}
+	endGame();
 }
 
 /**
  * The end is nigh
  *
  * @author	sbebbington
- * @date	5 Dec 2017
+ * @date	2 Jan 2018
  */
 void endGame()
 {
 	cls();
+	printf("DONKEYSOFT MMXVII - MMXVIII");
+	printf("\n\nhApPy NeW YeAr");
 	prompt("THANKS FOR PLAYING", 1);
 	gets(stringBuffer);
-	zx80Init();
 }
 
 /**
@@ -224,7 +270,8 @@ unsigned char setReel(unsigned char reel)
 unsigned short getWinningAmount(unsigned char reel1, unsigned char reel2, unsigned char reel3)
 {
 	unsigned short winnings = 0;
-	if(reel1 != 45){
+	if(reel1 != 45)
+	{
 		if(reel1 == reel2 && reel1 == reel3)
 		{
 			if(reel1 == 163)
@@ -257,15 +304,6 @@ unsigned short getWinningAmount(unsigned char reel1, unsigned char reel2, unsign
 			{
 				winnings += 75;
 			}
-		}
-		if(winnings)
-		{
-			printf("\nyou win \xa3%d.%d", winnings / 100, winnings % 100);
-			if(winnings % 100 == 0)
-			{
-				printf("0");
-			}
-			printf("\n");
 		}
 	}
 	return winnings;
@@ -345,6 +383,27 @@ void printTab(unsigned char tab, unsigned char txt[28])
 {
 	tab *= 4;
 	printSpc(tab, txt);
+}
+
+/**
+ * Prints the amount to two decimal places
+ *
+ * @param	unsigned short amount
+ * @authod	sbebbington
+ * @date	14 Dec 2017
+ * @version 1.0
+ */
+void printCurrency(unsigned short amount, unsigned char newLine)
+{
+	printf("\xa3%d.%d", amount / 100, amount % 100);
+	if(amount % 100 == 0)
+	{
+		printf("0");
+	}
+	if(newLine)
+	{
+		printf("\n");
+	}
 }
 
 /**
