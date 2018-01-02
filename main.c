@@ -110,9 +110,16 @@ void startGame()
 {
 	unsigned char _reel;
 	unsigned short favourComputer;
-	pounds = 500;
+	if(bank > 0)
+	{
+		pounds = bank;
+	}
+	else
+	{
+		pounds = 500;
+	}
 	bank = 0;
-	restart:
+
 	while(pounds)
 	{
 		cls();
