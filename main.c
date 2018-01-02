@@ -10,7 +10,6 @@ void main();
  * Game function prototypes
  */
 unsigned short getWinningAmount(unsigned char reel1, unsigned char reel2, unsigned char reel3);
-unsigned short getValueEntered();
 unsigned char setReel(unsigned char reel);
 void startGame();
 void endGame();
@@ -82,7 +81,8 @@ void titleScreen()
 	printSpc(7, "donkeysoft mmxviii\n\n");
 	printSpc(4, "and monument  microgames\n\n");
 	printSpc(12, "presents\n\n");
-	printSpc(10, "QuIcK FrUiTs++\n\nyou start with ");
+	printSpc(10, "QuIcK FrUiTs++\n\nyou start with");
+	printSpc(4,"");
 	if(bank > 0)
 	{
 		printCurrency(bank, 1);
@@ -190,33 +190,20 @@ void playAgain()
 	cls();
 	if(!bank)
 	{
-		printf("unfortunately your money is\nspent. the management do not\ngive credit. we welcome back\npaying customers who enter R\nand press RETURN, otherwise\nplease move along.");
+		printf("unfortunately your money is\nspent. the management do not\ngive credit. we welcome back\npaying customers\n");
 	}
 	else
 	{
-		printf("You have banked some money.\nenter the amount that you would\nlike to re-invest in our superb\nfruit machine or enter 0\n(zero) to return to the start\n");
+		printf("You have banked some money.\nthis money may be re-invested in\nour fruit machine\n");
 		printf("YOU HAVE ");
 		printCurrency(bank, 1);
 	}
-	for(i=32; i>0; i--)
-	{
-		stringBuffer[i] = 0xff;
-	}
+	printf("enter R and press RETURN\nto replay");
+	stringBuffer[0] = 0xff;
 	prompt("", 2);
 	gets(stringBuffer);
 	
-	pounds = getValueEntered();
-	
-	printCurrency(pounds,1);
-	printCurrency(bank,1);
-	prompt("",1);
-	gets(stringBuffer);
-	
-	if(pounds > 0)
-	{
-		startGame();
-	}
-	else if(stringBuffer[0] == "r" || stringBuffer[0] == "0")
+	if(stringBuffer[0] == 82 || stringBuffer[0] == 114)
 	{
 		titleScreen();
 	}
@@ -236,37 +223,6 @@ void endGame()
 	printf("\n\nhApPy NeW YeAr");
 	prompt("THANKS FOR PLAYING", 1);
 	gets(stringBuffer);
-	zx80Init();
-}
-
-/**
- * Converts the stringBuffer to an
- * unsigned short (removing the . or , separator)
- *
- * @author	sbebbington
- * @date	2 Jan 2018
- */
-unsigned short getValueEntered()
-{
-	unsigned short val = 5;
-	unsigned char value[5] = "\x00\x00\x00\x00\x00";
-	i = 6;
-	while(i)
-	{
-		if(stringBuffer[i] >= 48 && stringBuffer[i] <= 57)
-		{
-			value[val] = stringBuffer[i]-48;
-			val--;
-		}
-		i--;
-	}
-	val = value[4]+(value[3]*10)+(value[2]*100)+(value[1]*1000)+(value[0]*10000);
-	if(val <= bank && val % 25 == 0)
-	{
-		bank -= val;
-		return val;
-	}
-	return 0;
 }
 
 /**
