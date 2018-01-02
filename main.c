@@ -110,7 +110,7 @@ void startGame()
 {
 	unsigned char _reel;
 	unsigned short favourComputer;
-	if(bank > 0)
+	if(bank > 0 && pounds == 0)
 	{
 		pounds = bank;
 	}
@@ -203,6 +203,12 @@ void playAgain()
 	{
 		titleScreen();
 	}
+	else
+	{
+		pounds = _bank;
+		bank -= pounds;
+		startGame();
+	}
 	endGame();
 }
 
@@ -215,6 +221,8 @@ void playAgain()
 void endGame()
 {
 	cls();
+	printf("DONKEYSOFT MMXVII - MMXVIII");
+	printf("\nhApPy NeW YeAr");
 	prompt("THANKS FOR PLAYING", 1);
 	gets(stringBuffer);
 	zx80Init();
@@ -241,7 +249,11 @@ unsigned short getValueEntered()
 		}
 		i--;
 	}
-	returnValue (value[4]+(value[3]*10)+(value[2]*100)+(value[1]*1000)+(value[0]*10000));
+	if(!bank % 25)
+	{
+		returnValue (value[4]+(value[3]*10)+(value[2]*100)+(value[1]*1000)+(value[0]*10000));
+	}
+	return 0;
 }
 
 /**
